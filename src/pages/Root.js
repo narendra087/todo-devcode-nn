@@ -15,7 +15,7 @@ function Root() {
           </Text>
         </Box>
       </header>
-      <Box className='container' minH='calc(100vh - 105px)' maxW='1040px' margin='0 auto' padding='0 20px'>
+      <Box className='container' minH='calc(100vh - 105px)' maxW='1040px' margin='0 auto' padding='40px 20px'>
         <Outlet />
       </Box>
     </div>

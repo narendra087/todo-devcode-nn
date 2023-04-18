@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import './index.css';
 import Root from './pages/Root';
+import Activity from './pages/Activity';
 import NotFound from './pages/NotFound';
 
 const router = createBrowserRouter([
@@ -12,6 +13,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <Root />,
     errorElement: <NotFound />,
+    children: [
+      {
+        path: "/",
+        element: <Activity />
+      }
+    ]
   },
 ]);
 
@@ -20,6 +27,25 @@ const theme = extendTheme({
     primary: {
       100: '#16ABF8',
     },
+    text: {
+      100: '#111111',
+      200: '#888888',
+    }
+  },
+  components:{
+    Button: {
+      baseStyle: {
+        borderRadius: '45px',
+        fontWeight: '600'
+      },
+      sizes: {
+        md: {
+          h: '54px',
+          fontSize: '18px',
+          padding: '13.5px 39px',
+        }
+      }
+    }
   },
   styles: {
     global: {
