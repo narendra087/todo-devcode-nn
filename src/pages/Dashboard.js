@@ -10,6 +10,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { Link } from 'react-router-dom';
 
 import RemoveActivityModal from '../components/RemoveActivityModal';
 
@@ -121,7 +122,7 @@ const Dashboard = () => {
   
   const renderEmptyState = () => {
     return (
-      <Box pt='60px' display='flex' data-cy='activity-empty-state'>
+      <Box pt='60px' display='flex' data-cy='activity-empty-state' cursor='pointer' onClick={() => addActivity()}>
         <EmptyImage style={{margin: '0 auto'}} />
       </Box>
     )
@@ -134,7 +135,6 @@ const Dashboard = () => {
           activityData.map((activity, index) => (
             <GridItem
               key={activity.id}
-              data-cy={'activity-item-' + index}
               borderRadius='12px'
               boxShadow='0px 6px 10px 0px #0000001A'
               padding='22px 27px'
@@ -147,11 +147,22 @@ const Dashboard = () => {
               }}
               display='flex'
               flexDirection='column'
-              justifyContent='space-between'
-              cursor='pointer'
             >
-              <Text data-cy='activity-item-title' fontSize='18px' fontWeight='700'>{activity?.title || '-'}</Text>
-              <Box display='flex' alignItems='center' justifyContent='space-between' gap='6px'>
+              <Link
+                to={'/activity/' + activity.id}
+                data-cy={'activity-item-' + index}
+                className='activity-item-link'
+              >
+                <Text
+                  data-cy='activity-item-title'
+                  fontSize='18px'
+                  fontWeight='700'
+                  w='100%'
+                >
+                  {activity?.title || '-'}
+                </Text>
+              </Link>
+              <Box display='flex' alignItems='center' justifyContent='space-between' gap='6px' zIndex='100'>
                 <Text data-cy='activity-item-date' fontSize='14px' fontWeight='500' color='text.200'>{activity?.created_at ? formatDate(activity.created_at) : '-'}</Text>
                 <Icon data-cy='activity-item-delete-button' cursor='pointer' w='24px' h='24px' onClick={() => handleRemoveActivity(activity)}>
                   <TrashIcon />
