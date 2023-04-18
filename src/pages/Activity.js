@@ -131,9 +131,10 @@ const Activity = () => {
     return (
       <Grid templateColumns='repeat(4, 1fr)' gap='20px' pt='60px'>
         {
-          activityData.map((activity) => (
+          activityData.map((activity, index) => (
             <GridItem
               key={activity.id}
+              data-cy={'activity-item-' + index}
               borderRadius='12px'
               boxShadow='0px 6px 10px 0px #0000001A'
               padding='22px 27px'
@@ -145,10 +146,10 @@ const Activity = () => {
               justifyContent='space-between'
               cursor='pointer'
             >
-              <Text fontSize='18px' fontWeight='700'>{activity?.title || '-'}</Text>
+              <Text data-cy='activity-item-title' fontSize='18px' fontWeight='700'>{activity?.title || '-'}</Text>
               <Box display='flex' alignItems='center' justifyContent='space-between' gap='6px'>
-                <Text fontSize='14px' fontWeight='500' color='text.200'>{activity?.created_at ? formatDate(activity.created_at) : '-'}</Text>
-                <Icon cursor='pointer' w='24px' h='24px' onClick={() => handleRemoveActivity(activity)}>
+                <Text data-cy='activity-item-date' fontSize='14px' fontWeight='500' color='text.200'>{activity?.created_at ? formatDate(activity.created_at) : '-'}</Text>
+                <Icon data-cy='activity-item-delete-button' cursor='pointer' w='24px' h='24px' onClick={() => handleRemoveActivity(activity)}>
                   <TrashIcon />
                 </Icon>
               </Box>
