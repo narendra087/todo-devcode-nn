@@ -82,10 +82,12 @@ const Activity = () => {
         duration: '3000',
         render: () => (
           <Box
+            data-cy='modal-information'
             mt='15px'
             p='17px 27px'
             h='58px'
-            w='490px'
+            w='100%'
+            maxW='490px'
             bg='white'
             borderRadius='12px'
             display='flex'
@@ -93,8 +95,8 @@ const Activity = () => {
             gap='10px'
             boxShadow='0px 4px 10px 0px #0000001A'
           >
-            <InfoIcon />
-            <Text fontSize='14px' fontWeight='500'>Activity berhasil dihapus</Text>
+            <InfoIcon data-cy='modal-information-icon' />
+            <Text data-cy='modal-information-title' fontSize='14px' fontWeight='500'>Activity berhasil dihapus</Text>
           </Box>
         )
       })
