@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import './index.css';
 import Root from './pages/Root';
+import Dashboard from './pages/Dashboard';
 import Activity from './pages/Activity';
 import NotFound from './pages/NotFound';
 
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
+        element: <Dashboard />
+      },
+      {
+        path: "/activity/:id",
         element: <Activity />
       }
     ]
