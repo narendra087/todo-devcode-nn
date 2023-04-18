@@ -4,9 +4,10 @@ import { Outlet } from "react-router-dom";
 function Root() {
   return (
     <div className="app">
-      <header>
+      <header data-cy='header-background'>
         <Box height='105px' maxW='1040px' margin='0 auto' padding='0 20px' display='flex' alignItems='center'>
           <Text
+            data-cy='header-title'
             color='white'
             fontSize='24px'
             fontWeight={700}

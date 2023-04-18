@@ -11,4 +11,7 @@ body {
 header {
   width: 100vw;
   background: #16ABF8;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
