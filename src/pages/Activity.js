@@ -11,6 +11,7 @@ import {
   useDisclosure,
   Skeleton,
   Checkbox,
+  useToast,
 } from '@chakra-ui/react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -20,8 +21,10 @@ import { ReactComponent as BackIcon } from '../assets/back.svg'
 import { ReactComponent as EditIcon } from '../assets/edit.svg'
 import { ReactComponent as SortIcon } from '../assets/sort.svg'
 import { ReactComponent as TrashIcon } from '../assets/trash.svg'
+import { ReactComponent as InfoIcon } from '../assets/info.svg'
 
 import FormItemModal from '../components/FormItemModal'
+import RemoveActivityModal from '../components/RemoveActivityModal'
 
 const Activity = () => {
   const [activityData, setActivityData] = useState(null)
@@ -30,8 +33,10 @@ const Activity = () => {
   
   const editableRef = useRef()
   const params = useParams()
+  const toast = useToast()
   
   const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure()
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   
   useEffect(() => {
     getActivityDetail()
@@ -72,6 +77,48 @@ const Activity = () => {
     }
   }
   
+  const handleRemoveItem = (item) => {
+    if (!item) return
+    setSelectedItem(item)
+    onDeleteOpen()
+  }
+  
+  const removeItem = async () => {
+    if (!selectedItem) return
+    
+    try {
+      await axios.delete('https://todo.api.devcode.gethired.id/todo-items/' + selectedItem.id)
+      getActivityDetail()
+      onDeleteClose()
+      
+      toast({
+        position: 'top',
+        duration: '3000',
+        render: () => (
+          <Box
+            data-cy='modal-information'
+            mt='15px'
+            p='17px 27px'
+            h='58px'
+            w='100%'
+            maxW='490px'
+            bg='white'
+            borderRadius='12px'
+            display='flex'
+            alignItems='center'
+            gap='10px'
+            boxShadow='0px 4px 10px 0px #0000001A'
+          >
+            <InfoIcon data-cy='modal-information-icon' />
+            <Text data-cy='modal-information-title' fontSize='14px' fontWeight='500'>Item berhasil dihapus</Text>
+          </Box>
+        )
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   const renderEmptyState = () => {
     return (
       <Box pt='60px' display='flex' data-cy='todo-empty-state'>
@@ -80,9 +127,10 @@ const Activity = () => {
     )
   }
   
-  const renderTodoList = (item) => {
+  const renderTodoList = (item, index) => {
     return (
       <Box
+        data-cy={'todo-item-'+index}
         key={item.id}
         boxShadow='rgba(0, 0, 0, 0.1) 0px 6px 10px 0px'
         borderRadius='12px'
@@ -93,14 +141,14 @@ const Activity = () => {
         alignItems='center'
       >
         <Box display='flex' alignItems='center' gap='15px'>
-          <Checkbox defaultChecked={item.is_active === 1 ? false : true} mr='5px' onChange={(evnt) => handleChangeStatus(evnt, item.id)}></Checkbox>
-          <Box w='9px' h='9px' borderRadius='100%' bg={'priority.'+item.priority}></Box>
-          <Text textDecoration={item?.is_active ? 'none' : 'line-through'} color={item.is_active ? 'text.100' : 'text.200'}>{item?.title || '-'}</Text>
-          <Icon cursor='pointer' w='20px' h='20px'>
+          <Checkbox data-cy='todo-item-checkbox' defaultChecked={item.is_active === 1 ? false : true} mr='5px' onChange={(evnt) => handleChangeStatus(evnt, item.id)}></Checkbox>
+          <Box data-cy='todo-item-priority-indicator' w='9px' h='9px' borderRadius='100%' bg={'priority.'+item.priority}></Box>
+          <Text data-cy='todo-item-title' textDecoration={item?.is_active ? 'none' : 'line-through'} color={item.is_active ? 'text.100' : 'text.200'}>{item?.title || '-'}</Text>
+          <Icon data-cy='todo-item-edit-button' cursor='pointer' w='20px' h='20px'>
             <EditIcon />
           </Icon>
         </Box>
-        <Icon cursor='pointer' w='24px' h='24px'>
+        <Icon data-cy='todo-item-delete-button' cursor='pointer' w='24px' h='24px' onClick={() => handleRemoveItem(item)}>
           <TrashIcon />
         </Icon>
       </Box>
@@ -166,7 +214,7 @@ const Activity = () => {
       { !todoList.length ?
           renderEmptyState() : (
             <Box display='flex' flexDirection='column' gap='10px' mt='50px'>
-              { todoList.map((item) => (renderTodoList(item))) }
+              { todoList.map((item, index) => (renderTodoList(item, index))) }
             </Box>
           )
       }
@@ -178,6 +226,16 @@ const Activity = () => {
           itemData={selectedItem}
           isOpen={isAddOpen}
           onClose={onAddClose}
+        />
+      }
+      
+      { isDeleteOpen &&
+        <RemoveActivityModal
+          isOpen={isDeleteOpen}
+          onClose={onDeleteClose}
+          activity={selectedItem}
+          removeActivity={removeItem}
+          type='List Item'
         />
       }
     </>
