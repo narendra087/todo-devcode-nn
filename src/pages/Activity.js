@@ -257,7 +257,7 @@ const Activity = () => {
                   sortList.map((sortData, index) => (
                     <MenuItem
                       key={index}
-                      data-cy={sortData.value}
+                      data-cy="sort-selection"
                       p='14px 22px'
                       display='flex'
                       alignItems='center'
