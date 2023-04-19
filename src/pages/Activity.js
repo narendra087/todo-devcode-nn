@@ -30,12 +30,13 @@ const Activity = () => {
   const [activityData, setActivityData] = useState(null)
   const [todoList, setTodoList] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
+  const [type, setType] = useState('add')
   
   const editableRef = useRef()
   const params = useParams()
   const toast = useToast()
   
-  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure()
+  const { isOpen: isAddOpen, onOpen: onFormOpen, onClose: onAddClose } = useDisclosure()
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
   
   useEffect(() => {
@@ -44,6 +45,7 @@ const Activity = () => {
   
   const getActivityDetail = async () => {
     if (!params?.id) return
+    setSelectedItem(null)
     
     try {
       const res = await axios.get('https://todo.api.devcode.gethired.id/activity-groups/' + params.id)
@@ -75,6 +77,19 @@ const Activity = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+  
+  const handleAddItem = () => {
+    setType('add')
+    setSelectedItem(null)
+    onFormOpen()
+  }
+  
+  const handleEditItem = (item) => {
+    if (!item) return
+    setType('update')
+    setSelectedItem(item)
+    onFormOpen()
   }
   
   const handleRemoveItem = (item) => {
@@ -144,7 +159,7 @@ const Activity = () => {
           <Checkbox data-cy='todo-item-checkbox' defaultChecked={item.is_active === 1 ? false : true} mr='5px' onChange={(evnt) => handleChangeStatus(evnt, item.id)}></Checkbox>
           <Box data-cy='todo-item-priority-indicator' w='9px' h='9px' borderRadius='100%' bg={'priority.'+item.priority}></Box>
           <Text data-cy='todo-item-title' textDecoration={item?.is_active ? 'none' : 'line-through'} color={item.is_active ? 'text.100' : 'text.200'}>{item?.title || '-'}</Text>
-          <Icon data-cy='todo-item-edit-button' cursor='pointer' w='20px' h='20px'>
+          <Icon data-cy='todo-item-edit-button' cursor='pointer' w='20px' h='20px' onClick={() => handleEditItem(item)}>
             <EditIcon />
           </Icon>
         </Box>
@@ -204,7 +219,7 @@ const Activity = () => {
             colorScheme='linkedin'
             bg='primary.100'
             leftIcon={<AddIcon />}
-            onClick={() => onAddOpen()}
+            onClick={() => handleAddItem()}
           >
             Tambah
           </Button>
@@ -226,6 +241,7 @@ const Activity = () => {
           itemData={selectedItem}
           isOpen={isAddOpen}
           onClose={onAddClose}
+          type={type}
         />
       }
       

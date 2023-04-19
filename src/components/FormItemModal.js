@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import {
   Modal,
@@ -23,7 +23,7 @@ import {
 import { ReactComponent as ChevronDownIcon } from '../assets/chevron-down.svg'
 import { ReactComponent as CheckIcon } from '../assets/check.svg'
 
-const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose}) => {
+const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, type}) => {
   const priorityList = [
     {name: 'Very High', slugName: 'very-high'},
     {name: 'High', slugName: 'high'},
@@ -32,8 +32,19 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose})
     {name: 'Very Low', slugName: 'very-low'},
   ]
   
-  const [ listName, setListName ] = useState('')
+  const [ listName, setListName ] = useState(itemData ? itemData.title : '')
   const [ currentPriority, setPriority ] = useState(null)
+  
+  useEffect(() => {
+    if (type === 'update') {
+      setListName(itemData.title)
+      
+      const indexPriority = priorityList.findIndex((x) => x.slugName === itemData.priority)
+      if (indexPriority !== -1) {
+        setPriority(priorityList[indexPriority])
+      }
+    }
+  }, [])
   
   const handleAddItem = async () => {
     if (!listName || !currentPriority) return
@@ -45,8 +56,11 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose})
     }
     
     try {
-      const res = await axios.post('https://todo.api.devcode.gethired.id/todo-items', data)
-      console.log(res)
+      if (type === 'update') {
+        await axios.patch('https://todo.api.devcode.gethired.id/todo-items/' + itemData.id, data)
+      } else {
+        await axios.post('https://todo.api.devcode.gethired.id/todo-items', data)
+      }
       fetchActivity()
       onClose()
     } catch (error) {
