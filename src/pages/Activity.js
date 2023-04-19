@@ -42,7 +42,6 @@ const Activity = () => {
     
     try {
       const res = await axios.get('https://todo.api.devcode.gethired.id/activity-groups/' + params.id)
-      console.log(res)
       setActivityData(res.data)
       setTodoList(res.data.todo_items)
     } catch (error) {
@@ -55,8 +54,19 @@ const Activity = () => {
       title: evnt?.target?.value
     }
     try {
-      const res = await axios.patch('https://todo.api.devcode.gethired.id/activity-groups/' + params.id, data)
-      console.log(res)
+      await axios.patch('https://todo.api.devcode.gethired.id/activity-groups/' + params.id, data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  const handleChangeStatus = async (evnt, id) => {
+    const data = {
+      is_active: evnt.target.checked ? 0 : 1
+    }
+    try {
+      await axios.patch('https://todo.api.devcode.gethired.id/todo-items/' + id, data)
+      getActivityDetail()
     } catch (error) {
       console.log(error)
     }
@@ -83,9 +93,9 @@ const Activity = () => {
         alignItems='center'
       >
         <Box display='flex' alignItems='center' gap='15px'>
-          <Checkbox checked={!item?.is_active} mr='5px'></Checkbox>
+          <Checkbox defaultChecked={item.is_active === 1 ? false : true} mr='5px' onChange={(evnt) => handleChangeStatus(evnt, item.id)}></Checkbox>
           <Box w='9px' h='9px' borderRadius='100%' bg={'priority.'+item.priority}></Box>
-          <Text textDecoration={item?.is_active ? 'none' : 'line-through'}>{item?.title || '-'}</Text>
+          <Text textDecoration={item?.is_active ? 'none' : 'line-through'} color={item.is_active ? 'text.100' : 'text.200'}>{item?.title || '-'}</Text>
           <Icon cursor='pointer' w='20px' h='20px'>
             <EditIcon />
           </Icon>
