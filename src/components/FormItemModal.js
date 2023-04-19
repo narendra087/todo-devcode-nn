@@ -25,11 +25,11 @@ import { ReactComponent as CheckIcon } from '../assets/check.svg'
 
 const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, type}) => {
   const priorityList = [
-    {name: 'Very High', slugName: 'very-high'},
-    {name: 'High', slugName: 'high'},
-    {name: 'Medium', slugName: 'normal'},
-    {name: 'Low', slugName: 'low'},
-    {name: 'Very Low', slugName: 'very-low'},
+    {name: 'Very High', value: 'very-high'},
+    {name: 'High', value: 'high'},
+    {name: 'Medium', value: 'normal'},
+    {name: 'Low', value: 'low'},
+    {name: 'Very Low', value: 'very-low'},
   ]
   
   const [ listName, setListName ] = useState(itemData ? itemData.title : '')
@@ -39,7 +39,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
     if (type === 'update') {
       setListName(itemData.title)
       
-      const indexPriority = priorityList.findIndex((x) => x.slugName === itemData.priority)
+      const indexPriority = priorityList.findIndex((x) => x.value === itemData.priority)
       if (indexPriority !== -1) {
         setPriority(priorityList[indexPriority])
       }
@@ -52,7 +52,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
     const data = {
       activity_group_id: activityData.id,
       title: listName,
-      priority: currentPriority.slugName
+      priority: currentPriority.value
     }
     
     try {
@@ -99,7 +99,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
               >
                 { currentPriority ? (
                     <Box data-cy='modal-add-priority-item' display='flex' alignItems='center' gap='20px'>
-                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + currentPriority.slugName}></Box>
+                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + currentPriority.value}></Box>
                       {currentPriority.name}
                     </Box>
                   ) :
@@ -109,8 +109,8 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
               <MenuList>
                 {
                   priorityList.map((priority, index) => (
-                    <MenuItem data-cy={'modal-add-priority-' + priority.slugName} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
-                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + priority.slugName}></Box>
+                    <MenuItem data-cy={'modal-add-priority-' + priority.value} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
+                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + priority.value}></Box>
                       {priority.name}
                       { currentPriority?.name === priority.name &&
                         <Icon position='absolute' right='15px' top='20px' w='18px' h='18px'>

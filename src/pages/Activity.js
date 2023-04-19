@@ -12,6 +12,10 @@ import {
   Skeleton,
   Checkbox,
   useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -23,6 +27,13 @@ import { ReactComponent as SortIcon } from '../assets/sort.svg'
 import { ReactComponent as TrashIcon } from '../assets/trash.svg'
 import { ReactComponent as InfoIcon } from '../assets/info.svg'
 
+import { ReactComponent as LatestIcon } from '../assets/latest.svg'
+import { ReactComponent as OldestIcon } from '../assets/oldest.svg'
+import { ReactComponent as AzIcon } from '../assets/az.svg'
+import { ReactComponent as ZaIcon } from '../assets/za.svg'
+import { ReactComponent as UnfinishedIcon } from '../assets/unfinished.svg'
+import { ReactComponent as CheckIcon } from '../assets/check.svg'
+
 import FormItemModal from '../components/FormItemModal'
 import RemoveActivityModal from '../components/RemoveActivityModal'
 
@@ -31,6 +42,7 @@ const Activity = () => {
   const [todoList, setTodoList] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
   const [type, setType] = useState('add')
+  const [currentSort, setSort] = useState({name: 'Terbaru', value: 'sort-latest', icon: <LatestIcon width='20' height='20' />})
   
   const editableRef = useRef()
   const params = useParams()
@@ -38,6 +50,14 @@ const Activity = () => {
   
   const { isOpen: isAddOpen, onOpen: onFormOpen, onClose: onAddClose } = useDisclosure()
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+  
+  const sortList = [
+    {name: 'Terbaru', value: 'sort-latest', icon: <LatestIcon width='20' height='20' />},
+    {name: 'Terlama', value: 'sort-oldest', icon: <OldestIcon width='20' height='20' />},
+    {name: 'A-Z', value: 'sort-az', icon: <AzIcon width='20' height='20' />},
+    {name: 'Z-A', value: 'sort-za', icon: <ZaIcon width='20' height='20' />},
+    {name: 'Belum Selesai', value: 'sort-unfinished', icon: <UnfinishedIcon width='20' height='20' />},
+  ]
   
   useEffect(() => {
     getActivityDetail()
@@ -49,6 +69,7 @@ const Activity = () => {
     
     try {
       const res = await axios.get('https://todo.api.devcode.gethired.id/activity-groups/' + params.id)
+      setSort(sortList[0])
       setActivityData(res.data)
       setTodoList(res.data.todo_items)
     } catch (error) {
@@ -76,6 +97,22 @@ const Activity = () => {
       getActivityDetail()
     } catch (error) {
       console.log(error)
+    }
+  }
+  
+  const handleChangeSort = (sortData) => {
+    setSort(sortData)
+    if (sortData.value === 'sort-latest') {
+      todoList.sort((a,b) => b.id - a.id)
+    }
+    if (sortData.value === 'sort-oldest') {
+      todoList.sort((a,b) => a.id - b.id)
+    }
+    if (sortData.value === 'sort-az') {
+      todoList.sort((a,b) => a.title.localeCompare(b.title))
+    }
+    if (sortData.value === 'sort-za') {
+      todoList.sort((a,b) => b.title.localeCompare(a.title))
     }
   }
   
@@ -136,7 +173,7 @@ const Activity = () => {
   
   const renderEmptyState = () => {
     return (
-      <Box pt='60px' display='flex' data-cy='todo-empty-state'>
+      <Box pt='60px' display='flex' data-cy='todo-empty-state' cursor='pointer' onClick={() => handleAddItem()}>
         <EmptyImage style={{margin: '0 auto'}} />
       </Box>
     )
@@ -154,6 +191,7 @@ const Activity = () => {
         display='flex'
         justifyContent='space-between'
         alignItems='center'
+        hidden={currentSort?.value === 'sort-unfinished' && item.is_active === 0 ? true : false}
       >
         <Box display='flex' alignItems='center' gap='15px'>
           <Checkbox data-cy='todo-item-checkbox' defaultChecked={item.is_active === 1 ? false : true} mr='5px' onChange={(evnt) => handleChangeStatus(evnt, item.id)}></Checkbox>
@@ -199,20 +237,49 @@ const Activity = () => {
         </Box>
         <Box display='flex' alignItems='center' gap='20px'>
           { todoList.length > 0 &&
-            <Box data-cy='todo-sort-button'
-              w='54px' h='54px'
-              borderRadius='100%'
-              display='flex' alignItems='center' justifyContent='center'
-              border='1px solid #E5E5E5'
-              _hover={{
-                borderColor: 'primary.100'
-              }}
-              cursor='pointer'
-            >
-              <Icon w='24px' h='24px'>
-                <SortIcon />
-              </Icon>
-            </Box>
+            <Menu>
+              <MenuButton data-cy='todo-sort-button'
+                w='54px' h='54px'
+                borderRadius='100%'
+                display='flex' alignItems='center' justifyContent='center'
+                border='1px solid #E5E5E5'
+                _hover={{
+                  borderColor: 'primary.100'
+                }}
+                cursor='pointer'
+              >
+                <Icon w='24px' h='24px'>
+                  <SortIcon />
+                </Icon>
+              </MenuButton>
+              <MenuList data-cy='sort-parent'>
+                {
+                  sortList.map((sortData, index) => (
+                    <MenuItem
+                      key={index}
+                      data-cy={sortData.value}
+                      p='14px 22px'
+                      display='flex'
+                      alignItems='center'
+                      position='relative'
+                      gap='15px'
+                      onClick={() => handleChangeSort(sortData)}
+                    >
+                      <Icon w='20px' h='20px' top='3px' position='relative'>
+                        {sortData.icon}
+                      </Icon>
+                      {sortData.name}
+                      { currentSort?.value === sortData.value &&
+                        <Icon position='absolute' right='22px' top='16px' w='18px' h='18px'>
+                          <CheckIcon width={24} height={24} />
+                        </Icon>
+                      }
+                    </MenuItem>
+                  ))
+                }
+              </MenuList>
+              
+            </Menu>
           }
           <Button
             data-cy='todo-add-button'
