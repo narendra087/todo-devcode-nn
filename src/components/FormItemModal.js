@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import {
   Modal,
   ModalOverlay,
@@ -22,17 +23,36 @@ import {
 import { ReactComponent as ChevronDownIcon } from '../assets/chevron-down.svg'
 import { ReactComponent as CheckIcon } from '../assets/check.svg'
 
-const FormItemModal = ({isOpen, onClose}) => {
+const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose}) => {
   const priorityList = [
-    {name: 'Very High', dataCy:'modal-add-priority-very-high', color: 'priority.vh'},
-    {name: 'High', dataCy:'modal-add-priority-high', color: 'priority.h'},
-    {name: 'Medium', dataCy:'modal-add-priority-medium', color: 'priority.m'},
-    {name: 'Low', dataCy:'modal-add-priority-low', color: 'priority.l'},
-    {name: 'Very Low', dataCy:'modal-add-priority-very-low', color: 'priority.vl'},
+    {name: 'Very High', slugName: 'very-high'},
+    {name: 'High', slugName: 'high'},
+    {name: 'Medium', slugName: 'normal'},
+    {name: 'Low', slugName: 'low'},
+    {name: 'Very Low', slugName: 'very-low'},
   ]
   
   const [ listName, setListName ] = useState('')
   const [ currentPriority, setPriority ] = useState(null)
+  
+  const handleAddItem = async () => {
+    if (!listName || !currentPriority) return
+    
+    const data = {
+      activity_group_id: activityData.id,
+      title: listName,
+      priority: currentPriority.slugName
+    }
+    
+    try {
+      const res = await axios.post('https://todo.api.devcode.gethired.id/todo-items', data)
+      console.log(res)
+      fetchActivity()
+      onClose()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
   return (
     <Modal
@@ -48,7 +68,7 @@ const FormItemModal = ({isOpen, onClose}) => {
         <ModalBody p='38px 30px 23px'>
           <FormControl>
             <FormLabel data-cy='modal-add-name-title' fontSize='12px' fontWeight='600'>NAMA LIST ITEM</FormLabel>
-            <Input data-cy='modal-add-name-input' maxLength='25' value={listName} onChange={(e) => setListName(e.target.value)} />
+            <Input data-cy='modal-add-name-input' maxLength='25' placeholder='Tambahkan nama list item' value={listName} onChange={(e) => setListName(e.target.value)} />
           </FormControl>
           <FormControl mt={'26px'}>
             <FormLabel data-cy='modal-add-priority-title' fontSize='12px' fontWeight='600'>PRIORITY</FormLabel>
@@ -65,7 +85,7 @@ const FormItemModal = ({isOpen, onClose}) => {
               >
                 { currentPriority ? (
                     <Box data-cy='modal-add-priority-item' display='flex' alignItems='center' gap='20px'>
-                      <Box w='14px' h='14px' borderRadius='100%' bg={currentPriority.color}></Box>
+                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + currentPriority.slugName}></Box>
                       {currentPriority.name}
                     </Box>
                   ) :
@@ -75,8 +95,8 @@ const FormItemModal = ({isOpen, onClose}) => {
               <MenuList>
                 {
                   priorityList.map((priority, index) => (
-                    <MenuItem data-cy={priority.dataCy} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
-                      <Box w='14px' h='14px' borderRadius='100%' bg={priority.color}></Box>
+                    <MenuItem data-cy={'modal-add-priority-' + priority.slugName} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
+                      <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + priority.slugName}></Box>
                       {priority.name}
                       { currentPriority?.name === priority.name &&
                         <Icon position='absolute' right='15px' top='20px' w='18px' h='18px'>
@@ -92,7 +112,13 @@ const FormItemModal = ({isOpen, onClose}) => {
         </ModalBody>
 
         <ModalFooter borderTop='1px solid #E5E5E5' p='15px 30px 19px'>
-          <Button data-cy='modal-add-save-button' colorScheme='linkedin' bg='primary.100' isDisabled={!listName || !currentPriority}>
+          <Button
+            data-cy='modal-add-save-button'
+            colorScheme='linkedin'
+            bg='primary.100'
+            isDisabled={!listName || !currentPriority}
+            onClick={() => handleAddItem()}
+          >
             Simpan
           </Button>
         </ModalFooter>
