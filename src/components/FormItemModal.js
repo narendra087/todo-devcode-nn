@@ -18,6 +18,7 @@ import {
   MenuList,
   MenuItem,
   Icon,
+  Text,
 } from '@chakra-ui/react'
 
 import { ReactComponent as ChevronDownIcon } from '../assets/chevron-down.svg'
@@ -52,7 +53,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
     const data = {
       activity_group_id: activityData.id,
       title: listName,
-      priority: currentPriority.value
+      priority: currentPriority.value || 'very-high'
     }
     
     try {
@@ -103,7 +104,9 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
                       {currentPriority.name}
                     </Box>
                   ) :
-                  'Pilih priority'
+                  <Text data-cy='modal-add-priority-item'>
+                    Pilih priority
+                  </Text>
                 }
               </MenuButton>
               <MenuList>
@@ -130,7 +133,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
             data-cy='modal-add-save-button'
             colorScheme='linkedin'
             bg='primary.100'
-            isDisabled={!listName || !currentPriority}
+            isDisabled={!listName}
             onClick={() => handleAddItem()}
           >
             Simpan
