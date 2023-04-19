@@ -8,7 +8,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-header {
+.app-header {
   width: 100vw;
   background: #16ABF8;
   position: sticky;

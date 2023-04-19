@@ -32,6 +32,13 @@ const theme = extendTheme({
     primary: {
       100: '#16ABF8',
     },
+    priority: {
+      'vh': '#ED4C5C',
+      'h': '#F8A541',
+      'm': '#00A790',
+      'l': '#428BC1',
+      'vl': '#8942C1'
+    },
     text: {
       100: '#111111',
       200: '#888888',

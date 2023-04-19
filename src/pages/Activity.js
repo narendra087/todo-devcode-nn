@@ -7,14 +7,17 @@ import {
   Editable,
   EditablePreview,
   EditableInput,
+  useDisclosure,
 } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { ReactComponent as EmptyImage } from '../assets/todo-empty-state.svg'
 import { ReactComponent as AddIcon } from '../assets/add.svg'
 import { ReactComponent as BackIcon } from '../assets/back.svg'
 import { ReactComponent as EditIcon } from '../assets/edit.svg'
 import { ReactComponent as SortIcon } from '../assets/sort.svg'
+
+import FormItemModal from '../components/FormItemModal'
 
 const Activity = () => {
   const [isLoading, setLoading] = useState(false)
@@ -23,6 +26,9 @@ const Activity = () => {
   const [selectedItem, setSelectedItem] = useState(null)
   
   const editableRef = useRef()
+  const params = useParams()
+  
+  const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure()
   
   const renderEmptyState = () => {
     return (
@@ -82,6 +88,7 @@ const Activity = () => {
             colorScheme='linkedin'
             bg='primary.100'
             leftIcon={<AddIcon />}
+            onClick={() => onAddOpen()}
           >
             Tambah
           </Button>
@@ -91,6 +98,13 @@ const Activity = () => {
       { !todoList.length ?
           renderEmptyState() :
           renderTodoList()
+      }
+      
+      { isAddOpen &&
+        <FormItemModal
+          isOpen={isAddOpen}
+          onClose={onAddClose}
+        />
       }
     </>
   )
