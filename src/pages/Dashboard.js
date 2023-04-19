@@ -55,7 +55,7 @@ const Dashboard = () => {
     
     try {
       const res = await axios.post('https://todo.api.devcode.gethired.id/activity-groups', data)
-      setActivityData([...activityData, res.data])
+      getActivityData()
     } catch (error) {
       console.log(error)
     }
