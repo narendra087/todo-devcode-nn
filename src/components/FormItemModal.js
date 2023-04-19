@@ -99,12 +99,12 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
                 rightIcon={<ChevronDownIcon />}
               >
                 { currentPriority ? (
-                    <Box data-cy='modal-add-priority-item' display='flex' alignItems='center' gap='20px'>
+                    <Box display='flex' alignItems='center' gap='20px'>
                       <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + currentPriority.value}></Box>
                       {currentPriority.name}
                     </Box>
                   ) :
-                  <Text data-cy='modal-add-priority-item'>
+                  <Text>
                     Pilih priority
                   </Text>
                 }
@@ -112,7 +112,7 @@ const FormItemModal = ({fetchActivity, activityData, itemData, isOpen, onClose, 
               <MenuList>
                 {
                   priorityList.map((priority, index) => (
-                    <MenuItem data-cy={'modal-add-priority-' + priority.value} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
+                    <MenuItem data-cy={'modal-add-priority-item'} key={index} h='52px' p='14px 15px' display='flex' alignItems='center' gap='20px' position='relative' onClick={() => setPriority(priority)}>
                       <Box w='14px' h='14px' borderRadius='100%' bg={'priority.' + priority.value}></Box>
                       {priority.name}
                       { currentPriority?.name === priority.name &&
