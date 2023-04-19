@@ -150,7 +150,7 @@ const Dashboard = () => {
             >
               <Link
                 to={'/activity/' + activity.id}
-                data-cy={'activity-item-' + index}
+                data-cy={'activity-item'}
                 className='activity-item-link'
               >
                 <Text
